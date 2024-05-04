@@ -1,0 +1,29 @@
+[project]
+authors = [
+  "Marcel Hild <durandom@b4mad.net>",
+]
+description = "This is the #B4mad Racing Paddock."
+license = {text = "GPL-3.0-or-later"}
+name = "paddock"
+readme = "README.md"
+version = "0.6.1-rc3"
+
+[tool.isort]
+default_section = "THIRDPARTY"
+known_first_party = ["paddock", "telemetry"]
+known_third_party = []
+line_length = 128
+multi_line_output = 3
+profile = "black"
+
+[tool.black]
+include = '\.pyi?$'
+line-length = 128
+
+[tool.commitizen]
+major_version_zero = true
+name = "cz_emoji"
+tag_format = "v$version"
+update_changelog_on_bump = true
+version_provider = "pep621"
+version_scheme = "semver"

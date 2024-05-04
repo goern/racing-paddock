@@ -1,0 +1,68 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[[source]]
+name = "codeberg"
+url = "https://codeberg.org/api/packages/goern/pypi/simple/"
+verify_ssl = true
+
+[packages]
+apscheduler = "*"
+dash-bootstrap-components = "*"
+django = "*"
+django-admin-list-filter-dropdown = "*"
+django-admin-relation-links = "*"
+django-allauth = "*"
+django-crispy-forms = "*"
+django-dirtyfields = "*"
+django-environ = "*"
+django-extensions = "*"
+django-model-utils = "*"
+django-picklefield = "*"
+django-plotly-dash = "*"
+django-prometheus = "*"
+django-sql-explorer = "*"
+dpd-static-support = "*"
+flask-healthz = "*"
+fontawesomefree = "*"
+influxdb-client = {extras = ["async"], version = "*"}
+jupyter = "*"
+kaleido = "*"
+locked-dict = "*"
+matplotlib = "*"
+paho-mqtt = "*"
+pandas = "*"
+prometheus-flask-exporter = "*"
+psycopg2-binary = "*"
+rich = "*"
+sanitize-filename = "*"
+scikit-learn = "*"
+scipy = "*"
+sentry-sdk = "*"
+sqlalchemy = "*"
+uwsgi = "*"
+whitenoise = "*"
+toml = "*"
+openai = "*"
+pydub = "*"
+django-bootstrap5 = "*"
+django-bootstrap-icons = "*"
+django-markdown-deux = "*"
+crispy-bootstrap5 = "*"
+django-bootstrap4 = "*"
+
+[dev-packages]
+black = "*"
+factory-boy = "*"
+isort = "*"
+mypy = "*"
+pytest = "*"
+pytest-django = "*"
+sops2sealedsecret = {version = "*", index = "codeberg"}
+types-python-dateutil = "*"
+types-toml = "*"
+
+[requires]
+python_version = "3"

@@ -1,0 +1,34 @@
+{% extends "site/base.html" %}
+{% load django_bootstrap5 %}
+{% load racing_tags %}
+{% load static %}
+
+{% block title %}#B4mad Racing Copilots{% endblock title %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row p-4 pb-0 pe-lg-0 pt-lg-5 align-items-center rounded-3 border shadow-lg">
+        <div class="col-lg-7 p-3 p-lg-5 pt-lg-3">
+            <h1 class="display-4 fw-bold lh-1">Get Faster 🏁 Faster!</h1>
+            <p class="lead">
+                <ul>
+                  <li>Read the <a href="https://github.com/b4mad/racing#installation">installation instructions</a></li>
+                  <li>Check <a href="{%url "fastlap"%}">game / track / car </a> combos</li>
+                  <li>Start <a href="https://github.com/b4mad/racing">contributing</a></li>
+                </ul>
+            </p>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start mb-4 mb-lg-3">
+                <a href="{% url 'copilots-overview' %}" class="btn btn-primary btn-lg px-4 me-md-2 fw-bold">Your Copilots</a>
+            </div>
+        </div>
+        <div class="col-lg-4 offset-lg-1 p-0 overflow-hidden shadow-lg">
+            <img class="rounded img-fluid float-end" src="{% static 'car.webp' %}">
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        {% include 'sessions/cards.html' with combos=combos %}
+    </div>
+</div>
+{% endblock content %}
