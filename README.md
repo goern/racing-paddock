@@ -8,8 +8,15 @@ Open the project in a VSCode DevContainer. The container will install all depend
 
 ### run
 
-Run the project with the following command:
+Start serving the website.
 
 ```bash
 pipenv run ./manage.py runserver
 ```
+
+### debug
+
+* VSCode Command Pallete: `Python: Select Interpreter`
+  * select `Recommended: Pipenv`
+* Run and Debug
+  * runserver
