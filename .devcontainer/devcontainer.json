@@ -15,7 +15,7 @@
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// we install the required packages for the project via pipenv
-	"postCreateCommand": "pipenv install --dev"
+	"postCreateCommand": "scripts/post_container_create.sh"
 
 	// Configure tool-specific properties.
 	// "customizations": {},
