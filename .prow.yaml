@@ -1,0 +1,48 @@
+presubmits:
+  - name: kustomize-build
+    decorate: true
+    max_concurrency: 1
+    skip_if_only_changed: "^docs/|\\.md$|^(OWNERS|LICENSE)$|^\\."
+    skip_report: false
+    context: op1st/prow/kustomize-build
+    spec:
+      containers:
+        - image: quay.io/operate-first/opf-toolbox:latest
+          command:
+            - "test-kustomize-build"
+  - name: pre-commit
+    decorate: true
+    skip_report: false
+    always_run: true
+    context: op1st/prow/pre-commit
+    spec:
+      containers:
+        - image: quay.io/thoth-station/pre-commit:v0.17.0
+          command:
+            - "prow-job-precommit"
+  - name: e2e-telemetry
+    decorate: true
+    skip_report: false
+    always_run: true
+    context: b4mad-racing/e2e/telemetry
+    spec:
+      containers:
+        - image: quay.io/sclorg/python-311-c9s:20230913
+          command:
+            - components/paddock/scripts/e2e-test.sh
+          env:
+            - name: SECRET_KEY
+              value: abcd1ac34873c54e158d38e7f1283977f202abcd
+  - name: unit-pytest
+    decorate: true
+    skip_report: false
+    always_run: true
+    context: b4mad-racing/unit/pytest
+    spec:
+      containers:
+        - image: quay.io/sclorg/python-311-c9s:20230913
+          command:
+            - components/paddock/scripts/pytest.sh
+          env:
+            - name: SECRET_KEY
+              value: abcd1ac34873c54e158d38e7f1283977f202abcd
