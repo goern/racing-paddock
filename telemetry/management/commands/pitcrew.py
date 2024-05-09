@@ -1,3 +1,4 @@
+import os
 import threading
 
 from django.core.management.base import BaseCommand
@@ -25,8 +26,15 @@ class Command(BaseCommand):
             return
 
         crew = Crew(save=(not options["no_save"]), replay=options["replay"])
-        if options["coach"]:
-            driver, created = Driver.objects.get_or_create(name=options["coach"])
+
+        # Check if the B4MAD_RACING_COACH environment variable is set
+        env_coach = os.getenv('B4MAD_RACING_COACH')
+
+        # If the environment variable is set, it overrides the --coach option
+        coach_name = options["coach"] if options["coach"] else env_coach
+
+        if coach_name:
+            driver, created = Driver.objects.get_or_create(name=coach_name)
             coach, created = Coach.objects.get_or_create(driver=driver)
             crew.coach_watcher.start_coach(driver.name, coach, debug=True)
         elif options["session_saver"]:
