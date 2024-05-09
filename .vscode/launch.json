@@ -4,9 +4,234 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
+        // {
+        //     "name": "Python: Current File",
+        //     "type": "python",
+        //     "request": "launch",
+        //     "program": "${file}",
+        //     "console": "integratedTerminal",
+        //     "justMyCode": true
+        // },
+        {
+            "name": "analyze",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/manage.py",
+            "justMyCode": false,
+            "args": [
+                "analyze",
+                // "--game", "Assetto Corsa (64 bit)",
+                // "--game", "Richard Burns Rally",
+                // "--game", "iRacing",
+                // "--game", "rFactor 2 (64 bit)",
+                "--game", "rFactor",
+                // "--track", "algarve:",
+                // "--track", "brandshatch grandprix",
+                // "--track", "fiveflags",
+                // "--track", "fuji nochicane",
+                // "--track", "jerez gp",
+                // "--track", "ks_silverstone:gp",
+                // "--track", "martinsville",
+                // "--track", "Nurburgring_2020:Nordschleife_2020_24hr",
+                // "--track", "okayama short",
+                // "--track", "sebring international",
+                // "--track", "simtraxx_zeran:rally1",
+                // "--track", "spa up",
+                // "--track", "Daytona International Speedway",
+                // "--track", "East-West",
+                "--track", "Outer",
+                // "--car", "Mitsubishi Lancer Evo X R4"
+                // "--car", "Chevrolet Monte Carlo SS"
+                // "--car", "Chevrolet National Impala"
+                // "--car", "Dallara F312 F3"
+                // "--car", "Ferrari 488 GT3 Evo 2020",
+                // "--car", "gp_2009_mp4_24",
+                // "--car", "ks_porsche_911_rsr_2017"
+                // "--car", "Lamborghini Huracan GT3 EVO"
+                // "--car", "Porsche 911 GT3 Cup (992)",
+                // "--car", "Porsche Cayman GT4 Clubsport MR"
+                // "--car", "porsche_550_1500_rs_spyder_s1"
+                // "--car", "88 Mike Schreiner",
+                "--car", "Unknown",
+                // "--lap-id", "72550"
+                // "--copy-influx",
+                // "--force-save",
+            ],
+            "django": true
+        },
+        {
+            "name": "pitcrew no-save",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/manage.py",
+            "args": [
+                "pitcrew",
+                "--no-save",
+            ],
+            "django": true
+        },
+        {
+            "name": "pitcrew no-save replay",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/manage.py",
+            "args": [
+                "pitcrew",
+                "--no-save",
+                "--replay",
+            ],
+            "django": true
+        },
+        {
+            "name": "pitcrew no-save replay session-saver",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/manage.py",
+            "args": [
+                "pitcrew",
+                "--no-save",
+                "--session-saver",
+                "--replay",
+            ],
+            "django": true
+        },
+        {
+            "name": "pitcrew replay",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/manage.py",
+            "args": [
+                "pitcrew",
+                "--replay",
+            ],
+            "django": true
+        },
+        {
+            "name": "pitcrew session-saver replay",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/manage.py",
+            "args": [
+                "pitcrew",
+                "--replay",
+                "--session-saver",
+                "--no-save",
+            ],
+            "django": true
+        },
+        {
+            "name": "coach durandom replay",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/manage.py",
+            "args": [
+                "pitcrew",
+                "-c", "durandom",
+                "--replay",
+            ],
+            "django": true
+        },
+        {
+            "name": "coach durandom",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/manage.py",
+            "args": [
+                "pitcrew",
+                "-c", "durandom",
+            ],
+            "django": true
+        },
+        {
+            "name": "replay firehose live session",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/manage.py",
+            "args": [
+                "replay",
+                "--session-id", "1681585723",
+                "--live",
+                "--firehose",
+            ],
+            "django": true
+        },
+        {
+            "name": "replay firehose -1d",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/manage.py",
+            "args": [
+                "replay",
+                "--firehose",
+                "--start=-1d",
+                "--end=now()",
+            ],
+            "django": true
+        },
+        {
+            "name": "replay firehose live -1d",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/manage.py",
+            "args": [
+                "replay",
+                "--firehose",
+                "--start=-1d",
+                "--end=now()",
+                "--live",
+            ],
+            "django": true
+        },
+        {
+            "name": "replay firehose live fast_laps",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/manage.py",
+            "args": [
+                // "replay --firehose --live --keep-session-id --end 'now()' --start=2023-04-01 --wait=0 --quiet --bucket=fast_laps --measurement=fast_laps --delta=1h"
+                "replay",
+                "--firehose",
+                "--keep-session-id",
+                "--live",
+                "--end", "now()",
+                "--start=2023-04-01",
+                "--wait=0",
+                "--quiet",
+                "--bucket=fast_laps",
+                "--measurement=fast_laps",
+                "--delta=1h",
+            ],
+            "django": true
+        },
+        {
+            "name": "test",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/manage.py",
+            "args": [
+                "test",
+                // "telemetry.tests.test_coach.TestCoach.test_coach",
+                // "telemetry.tests.test_coach.TestCoach.test_track_guide",
+                // "telemetry.tests.test_coach.TestCoach.test_track_guide_iracing",
+                // "telemetry.tests.test_track_guide_app.TestTrackGuideApp.test_track_guide_iracing",
+                // "telemetry.tests.test_track_guide_app.TestTrackGuideApp.test_no_trackguide",
+                // "telemetry.tests.test_track_guide_app.TestTrackGuideApp.test_no_data_found",
+                // "telemetry.tests.test_debug_app.TestDebugApp.test_debug",
+                // "telemetry.tests.test_copilot_brake",
+                // "telemetry.tests.test_history.TestHistory.test_distance",
+                // "telemetry.tests.test_racing_stats.TestRacingStats.test_stats",
+                // "telemetry.tests.test_session",
+                // "telemetry.tests.test_session.TestSession.test_rbr",
+                "telemetry.tests.test_session.TestSession.test_ac",
+                // "telemetry.tests.test_session_streaming",
+                // "telemetry.tests.test_fast_lap_analyzer.TestFastLapAnalyser.test_analyze",
+            ],
+            "django": true
+        },
         {
             "name": "runserver",
-            "type": "debugpy",
+            "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/manage.py",
             "args": [
@@ -14,6 +239,18 @@
             ],
             "django": true
         },
-
+        {
+            "name": "load_data",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/manage.py",
+            "args": [
+                "load_data",
+                // "--landmarks",
+                "--track-guide",
+                "${workspaceFolder}/track_guides/Automobilista 2-BMW M4 GT4-Monza:Monza_2020.csv"
+            ],
+            "django": true
+        },
     ]
 }
