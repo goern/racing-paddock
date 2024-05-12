@@ -9,6 +9,7 @@ from .coach_app import CoachApp
 from .coach_copilots import CoachCopilots
 from .history import History
 from .mqtt import Mqtt
+from .kube_crew import KubeCrew
 
 
 class CoachWatcher:
@@ -20,6 +21,8 @@ class CoachWatcher:
         self.ready = False
 
         self._stop_event = threading.Event()
+
+        self.kube_crew = KubeCrew()
 
     def stop(self):
         self._stop_event.set()
@@ -49,11 +52,15 @@ class CoachWatcher:
                 if coach.enabled:
                     if coach.driver.name not in self.active_coaches.keys():
                         logging.debug(f"activating coach for {coach.driver}")
-                        self.start_coach(coach.driver.name, coach)
+                        # self.start_coach(coach.driver.name, coach)
+                        self.kube_crew.start_coach(coach.driver.name)
+                        self.active_coaches[coach.driver.name] = True
                 else:
                     if coach.driver.name in self.active_coaches.keys():
                         logging.debug(f"deactivating coach for {coach.driver}")
-                        self.stop_coach(coach.driver.name)
+                        # self.stop_coach(coach.driver.name)
+                        self.kube_crew.stop_coach(coach.driver.name)
+                        del self.active_coaches[coach.driver.name]
             time.sleep(self.sleep_time)
             self.ready = True
 
@@ -102,6 +109,7 @@ class CoachWatcher:
         self.active_coaches[driver_name] = [history, mqtt, threads]
 
     def check_active_coaches(self):
+        return
         dead_drivers = set()
         for driver_name in self.active_coaches.keys():
             # history = self.active_coaches[driver_name][0]

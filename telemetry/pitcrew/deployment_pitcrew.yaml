@@ -1,9 +1,8 @@
-apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
     app.kubernetes.io/component: paddock-pitcrew
-  name: paddock-pitcrew
+  name: pitcrew-driver
   annotations:
     image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"paddock:latest"},"fieldPath":"spec.template.spec.containers[?(@.name==\"pitcrew\")].image"},{"from":{"kind":"ImageStreamTag","name":"paddock:latest"},"fieldPath":"spec.template.spec.containers[?(@.name==\"migrate\")].image"}]'
 spec:
@@ -50,6 +49,8 @@ spec:
                 secretKeyRef:
                   name: postgresql-app
                   key: dbname
+            - name: B4MAD_RACING_COACH
+              value: tbd
           envFrom:
             - secretRef:
                 name: paddock-settings
