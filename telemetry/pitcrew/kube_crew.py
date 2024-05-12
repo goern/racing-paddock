@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 from kubernetes import client, config as kubeconfig
 import yaml
 
@@ -21,10 +22,17 @@ class KubeCrew:
             self.deployment_obj = client.V1Deployment(**deployment_yaml)
             # logging.debug(f"Deployment object: {self.deployment_obj}")
 
+    def sanitize_name(self, name):
+        # Kubernetes names must be valid DNS subdomains / a lowercase RFC 1123 subdomain
+        # and must start and end with an alphanumeric character
+        # regexp: '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*'
+
+        return re.sub(r'[^a-zA-Z0-9]+', '-', name).lower()
 
     def stop_coach(self, driver_name):
         namespace = self.namespace
         name = f"pitcrew-{driver_name}"
+        name = self.sanitize_name(name)
 
         logging.info(f"Stopping deployment {name} in namespace {namespace}")
         v1 = client.AppsV1Api()
@@ -40,6 +48,7 @@ class KubeCrew:
     def start_coach(self, driver_name):
         namespace = self.namespace
         name = f"pitcrew-{driver_name}"
+        name = self.sanitize_name(name)
         v1 = client.AppsV1Api()
 
         # deployment = client.V1Deployment(
