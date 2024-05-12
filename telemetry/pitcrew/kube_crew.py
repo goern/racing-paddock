@@ -6,7 +6,10 @@ import yaml
 class KubeCrew:
     def __init__(self):
         # Load Kubeconfig (assumes in-cluster or configured environment)
-        kubeconfig.load_kube_config()
+        try:
+            kubeconfig.load_kube_config()
+        except kubeconfig.config_exception.ConfigException:
+            kubeconfig.load_incluster_config()
 
         # get the namespace from the environment
         self.namespace = os.environ.get('POD_NAMESPACE', 'b4mad-racing')
