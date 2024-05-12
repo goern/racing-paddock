@@ -40,7 +40,6 @@ class CoachWatcher:
 
     def watch_coaches(self):
         while True and not self.stopped():
-            self.check_active_coaches()
             # sleep longer than save_sessions, to make sure all DB objects are initialized
             drivers = self.drivers()
             # collect all driver names
@@ -63,15 +62,6 @@ class CoachWatcher:
                             del self.active_coaches[coach.driver.name]
             time.sleep(self.sleep_time)
             self.ready = True
-
-    def stop_coach(self, driver_name):
-        if driver_name not in self.active_coaches.keys():
-            return
-        logging.info(f"disconnectin MQTT thread for {driver_name}")
-        self.active_coaches[driver_name][0].disconnect()
-        logging.info(f"disconnecting History thread for {driver_name}")
-        self.active_coaches[driver_name][1].disconnect()
-        del self.active_coaches[driver_name]
 
     def start_coach(self, driver_name, coach_model, debug=False):
         history = History()
@@ -106,25 +96,6 @@ class CoachWatcher:
         threads.append(c)
         c.start()
         h.start()
-        self.active_coaches[driver_name] = [history, mqtt, threads]
-
-    def check_active_coaches(self):
-        return
-        dead_drivers = set()
-        for driver_name in self.active_coaches.keys():
-            # history = self.active_coaches[driver_name][0]
-            # mqtt = self.active_coaches[driver_name][1]
-            threads = self.active_coaches[driver_name][2]
-
-            for t in threads:
-                if not t.is_alive():
-                    self.stop()
-                    logging.error(f"Thread {t} died for {driver_name}")
-                    dead_drivers.add(driver_name)
-                    break
-
-        for driver_name in dead_drivers:
-            self.stop_coach(driver_name)
 
     def run(self):
         try:
@@ -132,10 +103,3 @@ class CoachWatcher:
         except Exception as e:
             logging.exception(f"Exception in CoachWatcher: {e}")
             raise e
-        finally:
-            # stop all coaches
-            coaches = list(self.active_coaches.keys())
-            for driver in coaches:
-                self.stop_coach(driver)
-
-            logging.info("CoachWatcher stopped")
