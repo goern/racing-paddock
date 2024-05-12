@@ -66,72 +66,8 @@ spec:
               memory: 0
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
-          livenessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /healthz/live
-              port: 8080
-              scheme: HTTP
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 1
-          readinessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /healthz/ready
-              port: 8080
-              scheme: HTTP
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 1
       serviceAccount: paddock
       serviceAccountName: paddock
-      initContainers:
-        - name: migrate
-          image: paddock:latest
-          imagePullPolicy: Always
-          env:
-            - name: DB_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: postgresql-app
-                  key: host
-            - name: DB_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: postgresql-app
-                  key: port
-            - name: DB_USER
-              valueFrom:
-                secretKeyRef:
-                  name: postgresql-app
-                  key: user
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: postgresql-app
-                  key: password
-            - name: DB_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: postgresql-app
-                  key: dbname
-          envFrom:
-            - secretRef:
-                name: paddock-settings
-          command: ["/bin/sh", "-c"]
-          args:
-            - python /opt/app-root/src/manage.py migrate --noinput;
-              python /opt/app-root/src/manage.py createsuperuser --username $DJANGO_SUPERUSER_USERNAME --email $DJANGO_SUPERUSER_EMAIL --noinput || true
-          resources:
-            limits:
-              cpu: 500m
-              memory: 512Mi
-            requests:
-              cpu: 0
-              memory: 0
       volumes:
         - name: django-metrics-dir
           emptyDir:

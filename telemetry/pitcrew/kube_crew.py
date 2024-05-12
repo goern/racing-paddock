@@ -73,6 +73,10 @@ class KubeCrew:
 
         deployment = self.deployment_obj
         deployment.metadata['name'] = name
+        deployment.metadata['labels']['app.kubernetes.io/component'] = name
+        deployment.spec['selector']['matchLabels']['app.kubernetes.io/component'] = name
+        deployment.spec['template']['metadata']['labels']['app.kubernetes.io/component'] = name
+
         # set spec.template.spec.containers[0].env[-1].value to the driver name
         deployment.spec['template']['spec']['containers'][0]['env'][-1]['value'] = driver_name
 
