@@ -1,4 +1,5 @@
 import os
+import sys
 import threading
 
 from django.core.management.base import BaseCommand
@@ -7,12 +8,14 @@ from flask_healthz import healthz
 
 from telemetry.models import Coach, Driver, FastLap
 from telemetry.pitcrew.crew import Crew
+from telemetry.pitcrew.kube_crew import KubeCrew
 
 
 class Command(BaseCommand):
     help = "start pitcrew"
 
     def add_arguments(self, parser):
+        parser.add_argument("-k", "--kube-crew", nargs="?", type=str, default=None)
         parser.add_argument("-c", "--coach", nargs="?", type=str, default=None)
         parser.add_argument("-r", "--replay", action="store_true")
         parser.add_argument("-s", "--session-saver", action="store_true")
@@ -32,6 +35,16 @@ class Command(BaseCommand):
 
         # If the environment variable is set, it overrides the --coach option
         coach_name = options["coach"] if options["coach"] else env_coach
+
+        if options["kube_crew"]:
+            cmd = options["kube_crew"]
+            kube_crew = KubeCrew()
+            if cmd == "start":
+                kube_crew.start_coach(coach_name)
+            elif cmd == "stop":
+                kube_crew.stop_coach(coach_name)
+
+            sys.exit(0)
 
         if coach_name:
             driver, created = Driver.objects.get_or_create(name=coach_name)

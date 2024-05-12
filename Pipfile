@@ -52,6 +52,8 @@ django-bootstrap-icons = "*"
 django-markdown-deux = "*"
 crispy-bootstrap5 = "*"
 django-bootstrap4 = "*"
+kubernetes = "*"
+async-timeout = "*"
 
 [dev-packages]
 black = "*"
