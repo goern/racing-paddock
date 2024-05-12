@@ -32,8 +32,10 @@ class KubeCrew:
             api_response = v1.delete_namespaced_deployment(namespace=namespace, name=name)
             logging.info(f"Deployment deleted.")
             logging.debug(f"Deployment deleted. status={api_response}")
+            return True
         except client.rest.ApiException as e:
             logging.error(f"Exception when calling AppsV1Api->read_namespaced_deployment: {e}")
+            return False
 
     def start_coach(self, driver_name):
         namespace = self.namespace
@@ -69,5 +71,7 @@ class KubeCrew:
         try:
             api_response = v1.create_namespaced_deployment(namespace=namespace, body=deployment)
             logging.info(f"Deployment created. status={api_response}")
+            return True
         except client.rest.ApiException as e:
             logging.error(f"Exception when calling AppsV1Api->read_namespaced_deployment: {e}")
+            return False
