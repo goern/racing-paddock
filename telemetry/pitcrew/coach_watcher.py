@@ -42,24 +42,12 @@ class CoachWatcher:
         while True and not self.stopped():
             # sleep longer than save_sessions, to make sure all DB objects are initialized
             drivers = self.drivers()
-            # collect all driver names
-            # driver_names = [driver.name for driver in drivers]
-            # logging.info("checking coaches for drivers: %s", ", ".join(driver_names))
+            self.kube_crew.drivers.clear()
             coaches = Coach.objects.filter(driver__in=drivers)
             for coach in coaches:
-                # logging.info(f"{coach.driver} coach enabled: {coach.enabled}")
                 if coach.enabled:
-                    if coach.driver.name not in self.active_coaches.keys():
-                        logging.debug(f"activating coach for {coach.driver}")
-                        # self.start_coach(coach.driver.name, coach)
-                        if self.kube_crew.start_coach(coach.driver.name):
-                            self.active_coaches[coach.driver.name] = True
-                else:
-                    if coach.driver.name in self.active_coaches.keys():
-                        logging.debug(f"deactivating coach for {coach.driver}")
-                        # self.stop_coach(coach.driver.name)
-                        if self.kube_crew.stop_coach(coach.driver.name):
-                            del self.active_coaches[coach.driver.name]
+                    self.kube_crew.drivers.add(coach.driver.name)
+            self.kube_crew.sync_deployments()
             time.sleep(self.sleep_time)
             self.ready = True
 

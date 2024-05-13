@@ -22,6 +22,8 @@ class KubeCrew:
             self.deployment_obj = client.V1Deployment(**deployment_yaml)
             # logging.debug(f"Deployment object: {self.deployment_obj}")
 
+        self.drivers = set()
+
     def sanitize_name(self, name):
         # Kubernetes names must be valid DNS subdomains / a lowercase RFC 1123 subdomain
         # and must start and end with an alphanumeric character
@@ -42,7 +44,7 @@ class KubeCrew:
             logging.debug(f"Deployment deleted. status={api_response}")
             return True
         except client.rest.ApiException as e:
-            logging.error(f"Exception when calling AppsV1Api->read_namespaced_deployment: {e}")
+            logging.error(f"Exception deleting deployment: {e}")
             return False
 
     def start_coach(self, driver_name):
@@ -51,29 +53,11 @@ class KubeCrew:
         name = self.sanitize_name(name)
         v1 = client.AppsV1Api()
 
-        # deployment = client.V1Deployment(
-        #     api_version="apps/v1",
-        #     kind="Deployment",
-        #     metadata=client.V1ObjectMeta(
-        #         name=name,
-        #         annotations={
-        #             "image.openshift.io/triggers": '[{"from":{"kind":"ImageStreamTag","name":"paddock:latest"},"fieldPath":"spec.template.spec.containers[?(@.name==\\"coach\\")].image"}]'
-        #         }),
-        #     spec=client.V1DeploymentSpec(
-        #         replicas=2,
-        #         selector=client.V1LabelSelector(match_labels={"app": "pitcrew"}),
-        #         template=client.V1PodTemplateSpec(
-        #             metadata=client.V1ObjectMeta(labels={"app": "pitcrew"}),
-        #             spec=client.V1PodSpec(containers=[
-        #                 client.V1Container(name="coach", image="paddock:latest")
-        #             ])
-        #         )
-        #     )
-        # )
-
         deployment = self.deployment_obj
         deployment.metadata['name'] = name
         deployment.metadata['labels']['app.kubernetes.io/component'] = name
+        deployment.metadata['labels']['b4mad.racing/driver'] = name
+        deployment.metadata['labels']['b4mad.racing/component'] = 'pitcrew'
         deployment.spec['selector']['matchLabels']['app.kubernetes.io/component'] = name
         deployment.spec['template']['metadata']['labels']['app.kubernetes.io/component'] = name
 
@@ -86,5 +70,49 @@ class KubeCrew:
             logging.info(f"Deployment created. status={api_response}")
             return True
         except client.rest.ApiException as e:
-            logging.error(f"Exception when calling AppsV1Api->read_namespaced_deployment: {e}")
+            logging.error(f"Exception creating deployment: {e}")
             return False
+
+    def get_coach_status(self, driver_name):
+        namespace = self.namespace
+        name = f"pitcrew-{driver_name}"
+        name = self.sanitize_name(name)
+        v1 = client.AppsV1Api()
+
+        try:
+            api_response = v1.read_namespaced_deployment(namespace=namespace, name=name)
+            # logging.debug(f"Deployment found. status={api_response}")
+            return api_response
+        except client.rest.ApiException as e:
+            logging.error(f"Exception reading deployment: {e}")
+            return False
+
+    def get_all_coaches(self) -> list[str]:
+        namespace = self.namespace
+        v1 = client.AppsV1Api()
+        label_selector = "b4mad.racing/component=pitcrew"
+
+        try:
+            api_response = v1.list_namespaced_deployment(namespace=namespace, label_selector=label_selector)
+            # logging.debug(f"Deployments found. status={api_response}")
+            # return a list of all deployment names
+            return [item.metadata.name for item in api_response.items]
+        except client.rest.ApiException as e:
+            logging.error(f"Exception listing deployments: {e}")
+            return []
+
+    def sync_deployments(self):
+        # get all deployments
+        deployments = self.get_all_coaches()
+        # sanitized drivers
+        sanitized_drivers = [self.sanitize_name(driver) for driver in self.drivers]
+        # stop deployments that are not in self.drivers
+        for deployment in deployments:
+            driver_name = deployment.replace("pitcrew-", "")
+            if driver_name not in sanitized_drivers:
+                self.stop_coach(driver_name)
+            else:
+                sanitized_drivers.remove(driver_name)
+        # start deployments that are in self.drivers
+        for driver_name in sanitized_drivers:
+            self.start_coach(driver_name)
