@@ -17,7 +17,7 @@ from .mqtt import Mqtt
 class CoachWatcher:
     def __init__(self, firehose: ActiveDrivers, replay=False):
         self.firehose = firehose
-        self.sleep_time = 3
+        self.sleep_time = 10
         self.active_coaches = {}
         self.replay = replay
         self.ready = False
@@ -39,15 +39,15 @@ class CoachWatcher:
         return drivers
 
     def watch_coaches(self):
+        self.ready = True
         while True and not self.stopped():
             # sleep longer than save_sessions, to make sure all DB objects are initialized
+            time.sleep(self.sleep_time)
             drivers = self.drivers()
             self.kube_crew.drivers.clear()
             for driver in drivers:
                 self.kube_crew.drivers.add(driver.name)
             self.kube_crew.sync_deployments()
-            time.sleep(self.sleep_time)
-            self.ready = True
             self.firehose.do_clear_sessions = True
 
     def start_coach(self, driver_name, coach_model, debug=False):

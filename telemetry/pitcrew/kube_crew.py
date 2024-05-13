@@ -107,13 +107,19 @@ class KubeCrew:
     def sync_deployments(self):
         # get all deployments
         deployments = self.get_all_coaches()
-        # sanitized drivers
-        sanitized_drivers = [self.sanitize_name(driver) for driver in self.drivers]
+        # create sanitized drivers as a mapping of driver names to sanitized names
+        sanitized_drivers = {}
+        for driver_name in self.drivers:
+            sanitized_drivers[self.sanitize_name(driver_name)] = driver_name
+
         # stop deployments that are not in self.drivers
         for deployment in deployments:
             driver_name = deployment.replace("pitcrew-", "")
             if driver_name not in sanitized_drivers:
                 self.stop_coach(driver_name)
+            else:
+                # remove driver from sanitized_drivers
+                del sanitized_drivers[driver_name]
         # start deployments that are in self.drivers
-        for driver_name in self.drivers:
+        for driver_name in sanitized_drivers.values():
             self.start_coach(driver_name)
