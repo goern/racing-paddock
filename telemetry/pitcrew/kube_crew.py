@@ -52,8 +52,8 @@ class KubeCrew:
 
     def start_coach(self, driver_name):
         namespace = self.namespace
-        name = f"pitcrew-{driver_name}"
-        name = self.sanitize_name(name)
+        name = self.sanitize_name(driver_name)
+        name = f"pitcrew-{name}"
         v1 = client.AppsV1Api()
 
         deployment = self.deployment_obj

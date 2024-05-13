@@ -76,18 +76,18 @@ class Persister:
 
         """
 
+        max_session_age = 60 * 60  # 1 hour
         delete_sessions = []
         for topic, session in self.sessions.items():
-            # Delete session without updates for 10 minutes
-            if (now - session.end).seconds > 600:
+            if (now - session.end).seconds > max_session_age:
                 delete_sessions.append(topic)
 
-            # Delete any lap marked for deletion
-            for i in range(len(session.laps) - 1, -1, -1):
-                lap = session.laps[i]
-                if lap.get("delete", False):
-                    logging.debug(f"{topic}\n\t deleting lap {lap['number']}")
-                    del session.laps[i]
+            # # Delete any lap marked for deletion
+            # for i in range(len(session.laps) - 1, -1, -1):
+            #     lap = session.laps[i]
+            #     if lap.get("delete", False):
+            #         logging.debug(f"{topic}\n\t deleting lap {lap['number']}")
+            #         del session.laps[i]
 
         # Delete all inactive sessions
         for topic in delete_sessions:
