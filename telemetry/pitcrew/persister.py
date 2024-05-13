@@ -5,12 +5,18 @@ import django.utils.timezone
 
 from .session import Session
 from .session_rbr import SessionRbr
+from .session_saver import SessionSaver
 
 
-class Firehose:
+class Persister:
     def __init__(self, debug=False):
         self.debug = debug
         self.sessions: Dict[str, Union[Session, SessionRbr]] = {}
+        self.clear_ticks = 0
+        self.clear_interval = 60 * 60 * 5  # ticks. telemetry is sent at 60hz, so 60*60*5 = 5 minutes
+        self.save_ticks = 0
+        self.save_interval = 60 * 60 * 1  # ticks. telemetry is sent at 60hz, so 60*60*1 = 1 minute
+        self.session_saver = SessionSaver(self)
 
     def notify(self, topic, payload, now=None):
         now = now or django.utils.timezone.now()
@@ -46,6 +52,16 @@ class Firehose:
 
         session = self.sessions[topic]
         session.signal(payload, now)
+        self.save_sessions(now)
+
+    def save_sessions(self, now):
+        if self.save_ticks < self.save_interval:
+            self.save_ticks += 1
+            return
+        self.save_ticks = 0
+
+        self.session_saver.save_sessions()
+        self.clear_sessions(now)
 
     # TODO: clear sessions every now and then
     def clear_sessions(self, now):

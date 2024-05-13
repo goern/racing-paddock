@@ -2,26 +2,26 @@ import logging
 import threading
 import time
 
-from telemetry.models import Coach, Driver
+from telemetry.models import Driver
 
-from .coach import Coach as PitCrewCoach
-from .coach_app import CoachApp
+from .active_drivers import ActiveDrivers
+
+# from .coach import Coach as PitCrewCoach
+# from .coach_app import CoachApp
 from .coach_copilots import CoachCopilots
 from .history import History
-from .mqtt import Mqtt
 from .kube_crew import KubeCrew
+from .mqtt import Mqtt
 
 
 class CoachWatcher:
-    def __init__(self, firehose, replay=False):
+    def __init__(self, firehose: ActiveDrivers, replay=False):
         self.firehose = firehose
         self.sleep_time = 3
         self.active_coaches = {}
         self.replay = replay
         self.ready = False
-
         self._stop_event = threading.Event()
-
         self.kube_crew = KubeCrew()
 
     def stop(self):
@@ -43,22 +43,22 @@ class CoachWatcher:
             # sleep longer than save_sessions, to make sure all DB objects are initialized
             drivers = self.drivers()
             self.kube_crew.drivers.clear()
-            coaches = Coach.objects.filter(driver__in=drivers)
-            for coach in coaches:
-                if coach.enabled:
-                    self.kube_crew.drivers.add(coach.driver.name)
+            for driver in drivers:
+                self.kube_crew.drivers.add(driver.name)
             self.kube_crew.sync_deployments()
             time.sleep(self.sleep_time)
             self.ready = True
+            self.firehose.do_clear_sessions = True
 
     def start_coach(self, driver_name, coach_model, debug=False):
         history = History()
-        if coach_model.mode == Coach.MODE_TRACK_GUIDE_APP or coach_model.mode == Coach.MODE_DEBUG_APP:
-            coach = CoachApp(history, coach_model, debug=debug)
-        elif coach_model.mode == Coach.MODE_COPILOTS:
-            coach = CoachCopilots(history, coach_model, debug=debug)
-        else:
-            coach = PitCrewCoach(history, coach_model, debug=debug)
+        # if coach_model.mode == Coach.MODE_TRACK_GUIDE_APP or coach_model.mode == Coach.MODE_DEBUG_APP:
+        #     coach = CoachApp(history, coach_model, debug=debug)
+        # if coach_model.mode == Coach.MODE_COPILOTS:
+        #     coach = CoachCopilots(history, coach_model, debug=debug)
+        # else:
+        #     coach = PitCrewCoach(history, coach_model, debug=debug)
+        coach = CoachCopilots(history, coach_model, debug=debug)
 
         topic = f"crewchief/{driver_name}/#"
         mqtt = Mqtt(coach, topic, replay=self.replay, debug=debug)

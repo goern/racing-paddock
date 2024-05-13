@@ -6,10 +6,11 @@ import time
 
 from flask_healthz import HealthError
 
+from .active_drivers import ActiveDrivers
 from .coach_watcher import CoachWatcher
-from .firehose import Firehose
 from .mqtt import Mqtt
-from .session_saver import SessionSaver
+
+# from .session_saver import SessionSaver
 
 
 class Crew:
@@ -22,14 +23,14 @@ class Crew:
 
         topic = "crewchief/#"
 
-        self.firehose = Firehose(debug=debug)
+        self.firehose = ActiveDrivers(debug=debug)
         self.mqtt = Mqtt(self.firehose, topic, replay=replay)
 
         self.coach_watcher = CoachWatcher(self.firehose, replay=replay)
         self.coach_watcher.sleep_time = 3
 
-        self.session_saver = SessionSaver(self.firehose, save=save)
-        self.session_saver.sleep_time = 5
+        # self.session_saver = SessionSaver(self.firehose, save=save)
+        # self.session_saver.sleep_time = 5
 
         self._stop_event = threading.Event()
         logging.debug("Crew initialized")
@@ -70,9 +71,9 @@ class Crew:
         t.name = "coach_watcher"
         threads.append(t)
 
-        t = threading.Thread(target=self.session_saver.run)
-        t.name = "session_saver"
-        threads.append(t)
+        # t = threading.Thread(target=self.session_saver.run)
+        # t.name = "session_saver"
+        # threads.append(t)
 
         for t in threads:
             logging.debug(f"starting Thread {t}")
@@ -80,7 +81,7 @@ class Crew:
 
         logging.debug("waiting for threads to be ready...")
         while True:
-            if self.mqtt.ready and self.coach_watcher.ready and self.session_saver.ready:
+            if self.mqtt.ready and self.coach_watcher.ready:  # and self.session_saver.ready:
                 break
             time.sleep(1)
 
@@ -98,7 +99,7 @@ class Crew:
 
         self.mqtt.stop()
         self.coach_watcher.stop()
-        self.session_saver.stop()
+        # self.session_saver.stop()
 
         for t in threads:
             logging.debug(f"joining Thread {t}")

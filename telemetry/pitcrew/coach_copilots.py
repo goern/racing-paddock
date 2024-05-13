@@ -1,8 +1,8 @@
 import json
 
 import django.utils.timezone
-from b4mad_racing_website.models import CopilotInstance
 
+from b4mad_racing_website.models import CopilotInstance
 from telemetry.models import Coach, SessionType
 from telemetry.pitcrew.logging_mixin import LoggingMixin
 
@@ -11,6 +11,7 @@ from .application.debug_application import DebugApplication
 from .application.session import Session
 from .application.track_guide_application import TrackGuideApplication
 from .history import History
+from .persister import Persister
 
 
 class CoachCopilots(LoggingMixin):
@@ -18,6 +19,7 @@ class CoachCopilots(LoggingMixin):
         self.history = history
         self.coach_model = coach_model
         self.response_topic = f"/coach/{coach_model.driver.name}"
+        self.persister = Persister(debug=debug)
         self.init_variables()
 
     def init_variables(self):
@@ -59,6 +61,9 @@ class CoachCopilots(LoggingMixin):
         self.session_id = filter["SessionId"]
         self.session_type = SessionType.objects.get(type=filter["SessionType"])
         self.log_debug("new session %s", topic)
+        self.coach_model.refresh_from_db()
+        if self.coach_model.enabled is False:
+            return
         self.history.set_filter(filter, self.coach_model.mode)
 
     def ready(self):
@@ -152,10 +157,15 @@ class CoachCopilots(LoggingMixin):
 
     def notify(self, topic, telemetry, now=None):
         now = now or django.utils.timezone.now()
+        self.persister.notify(topic, telemetry, now)
+
         if self.topic != topic:
             self.previous_distance = int(telemetry["DistanceRoundTrack"])
             self.previous_delta = 0
             self.new_session(topic)
+
+        if self.coach_model.enabled is False:
+            return
 
         if not self.ready():
             return self.return_messages(store_play_at=False)
