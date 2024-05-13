@@ -42,13 +42,13 @@ class Persister:
 
             session.driver = driver
             session.session_id = session_id
-            logging.debug(f"New session: {topic}")
             session.game_name = game
             session.track = track
             session.car = car
             session.car_class = payload.get("CarClass", "")
             session.session_type = session_type
             self.sessions[topic] = session
+            logging.debug(f"New session: {topic}")
 
         session = self.sessions[topic]
         session.signal(payload, now)

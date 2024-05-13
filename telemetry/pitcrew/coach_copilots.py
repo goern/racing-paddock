@@ -158,6 +158,8 @@ class CoachCopilots(LoggingMixin):
     def notify(self, topic, telemetry, now=None):
         now = now or django.utils.timezone.now()
         self.persister.notify(topic, telemetry, now)
+        if self.driver_name == "Jim":
+            return
 
         if self.topic != topic:
             self.previous_distance = int(telemetry["DistanceRoundTrack"])

@@ -144,6 +144,17 @@
             "django": true
         },
         {
+            "name": "coach jim",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/manage.py",
+            "args": [
+                "pitcrew",
+                "-c", "Jim",
+            ],
+            "django": true
+        },
+        {
             "name": "replay firehose live session",
             "type": "python",
             "request": "launch",
