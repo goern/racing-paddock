@@ -144,6 +144,8 @@ if TESTING or ("pytest" in sys.modules):
         },
     }
 else:
+    CONN_HEALTH_CHECKS = True
+    CONN_MAX_AGE = None
     DATABASES = {
         "default": {
             "ENGINE": "django_prometheus.db.backends.postgresql",

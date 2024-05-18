@@ -89,6 +89,10 @@ class Persister:
             #         logging.debug(f"{topic}\n\t deleting lap {lap['number']}")
             #         del session.laps[i]
 
+        if len(delete_sessions) > 0:
+            logging.debug(f"Inactive sessions: {len(delete_sessions)}")
+            logging.debug(f"Active sessions: {len(self.sessions)}")
+
         # Delete all inactive sessions
         for topic in delete_sessions:
             del self.sessions[topic]

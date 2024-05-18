@@ -27,7 +27,7 @@ class Crew:
         self.mqtt = Mqtt(self.firehose, topic, replay=replay)
 
         self.coach_watcher = CoachWatcher(self.firehose, replay=replay)
-        self.coach_watcher.sleep_time = 3
+        # self.coach_watcher.sleep_time = 3
 
         # self.session_saver = SessionSaver(self.firehose, save=save)
         # self.session_saver.sleep_time = 5
