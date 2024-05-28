@@ -91,6 +91,13 @@ class Mqtt:
 
     def on_connect(self, mqttc, obj, flags, rc):
         _LOGGER.debug("on_connect rc: %s", str(rc))
+
+        s = mqttc.subscribe(self.topic, 0)
+        if s[0] == mqtt.MQTT_ERR_SUCCESS:
+            _LOGGER.info(f"Subscribed to {self.topic}")
+        else:
+            _LOGGER.error(f"Failed to subscribe to {self.topic}")
+            # exit(1)
         if rc == mqtt.MQTT_ERR_SUCCESS:
             self.ready = True
 
@@ -111,14 +118,7 @@ class Mqtt:
         if self.replay:
             self.topic = f"replay/{self.topic}"
 
-        s = self.mqttc.subscribe(self.topic, 0)
-        if s[0] == mqtt.MQTT_ERR_SUCCESS:
-            _LOGGER.info(f"Subscribed to {self.topic}")
-            self.mqttc.loop_forever()
-        else:
-            _LOGGER.error(f"Failed to subscribe to {self.topic}")
-            exit(1)
-        _LOGGER.error("Exited loop_forever")
+        self.mqttc.loop_forever()
 
 
 # if __name__ == "__main__":
