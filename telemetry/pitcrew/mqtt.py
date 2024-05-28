@@ -118,6 +118,7 @@ class Mqtt:
         else:
             _LOGGER.error(f"Failed to subscribe to {self.topic}")
             exit(1)
+        _LOGGER.error("Exited loop_forever")
 
 
 # if __name__ == "__main__":
