@@ -1,3 +1,4 @@
+import logging
 import os
 import tempfile
 
@@ -102,11 +103,20 @@ class TelemetryLoader:
             # aggregate = ""
             # if self.caching:
             #     aggregate = "1s"
-            session_df = influx.session_df(
-                session_id, measurement=measurement, bucket=bucket, start="-10y", aggregate=aggregate, drop_tags=True
-            )
-            if self.caching:
-                self.save_dataframe(session_df, file_path)
+            try:
+                session_df = influx.session_df(
+                    session_id,
+                    measurement=measurement,
+                    bucket=bucket,
+                    start="-10y",
+                    aggregate=aggregate,
+                    drop_tags=True,
+                )
+                if self.caching:
+                    self.save_dataframe(session_df, file_path)
+            except Exception as e:
+                logging.debug(f"Error fetching session data: {e}")
+                session_df = pd.DataFrame()
 
         if len(session_df) > 0:
             df = self.process_dataframe(session_df)
