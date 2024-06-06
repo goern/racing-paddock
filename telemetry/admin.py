@@ -22,7 +22,7 @@ from .models import (
 class FastLapAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
     list_display = ["track"]
     changelist_links = ["fast_lap_segments", "laps"]
-    list_display = ["game", "car", "track", "driver"]
+    list_display = ["game", "car", "track", "driver", "created", "modified"]
 
 
 class FastLapSegmentAdmin(AdminChangeLinksMixin, admin.ModelAdmin):

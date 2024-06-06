@@ -84,8 +84,10 @@ class Command(BaseCommand):
                 valid_laps, min_laps=min_laps, max_laps=max_laps, force_save=options["force_save"]
             )
 
-            if options["copy_influx"] and used_laps:
+            if options["copy_influx"] and (used_laps or game in ["Richard Burns Rally"]):
                 sessions = set()
+                if game in ["Richard Burns Rally"]:
+                    used_laps = valid_laps
                 for lap in used_laps:
                     sessions.add(lap.session)
 

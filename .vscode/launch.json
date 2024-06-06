@@ -22,10 +22,10 @@
             "args": [
                 "analyze",
                 // "--game", "Assetto Corsa (64 bit)",
-                // "--game", "Richard Burns Rally",
+                "--game", "Richard Burns Rally",
                 // "--game", "iRacing",
                 // "--game", "rFactor 2 (64 bit)",
-                "--game", "rFactor",
+                // "--game", "rFactor",
                 // "--track", "algarve:",
                 // "--track", "brandshatch grandprix",
                 // "--track", "fiveflags",
@@ -40,7 +40,7 @@
                 // "--track", "spa up",
                 // "--track", "Daytona International Speedway",
                 // "--track", "East-West",
-                "--track", "Outer",
+                // "--track", "Outer",
                 // "--car", "Mitsubishi Lancer Evo X R4"
                 // "--car", "Chevrolet Monte Carlo SS"
                 // "--car", "Chevrolet National Impala"
@@ -53,9 +53,9 @@
                 // "--car", "Porsche Cayman GT4 Clubsport MR"
                 // "--car", "porsche_550_1500_rs_spyder_s1"
                 // "--car", "88 Mike Schreiner",
-                "--car", "Unknown",
+                // "--car", "Unknown",
                 // "--lap-id", "72550"
-                // "--copy-influx",
+                "--copy-influx",
                 // "--force-save",
             ],
             "django": true
