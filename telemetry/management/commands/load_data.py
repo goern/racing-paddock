@@ -9,6 +9,7 @@ from openai import OpenAI
 from pydub import AudioSegment
 
 # from telemetry.factories import DriverFactory
+from telemetry.management.commands.rbr_roadbook import Roadbooks
 from telemetry.models import Game, Landmark, TrackGuide
 
 # from django.db import transaction
@@ -19,6 +20,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("--landmarks", action="store_true")
+        parser.add_argument("--landmarks-rbr", nargs="?", type=str)
         parser.add_argument("--tts", action="store_true")
         parser.add_argument("--track-guide", nargs="?", type=str)
 
@@ -29,6 +31,8 @@ class Command(BaseCommand):
             self.trackguide(options["track_guide"])
         if options["tts"]:
             self.generate_tts()
+        if options["landmarks_rbr"]:
+            self.rbr_roadbook(options["landmarks_rbr"])
 
     def generate_tts(self):
         client = OpenAI()
@@ -102,6 +106,31 @@ class Command(BaseCommand):
                     data.pop("segment")
                 logging.debug(data)
                 track_guide.notes.create(**data)
+
+    def rbr_roadbook_load_data(self, path, track):
+        # open the path and get the file with the latest modified date
+        pass
+
+
+
+    def rbr_roadbook(self, filename):
+        # get all tracks for Richard Burns Rally
+        tracks = Game.objects.filter(name="Richard Burns Rally").first().tracks.all()
+        for track in tracks:
+            # logging.debug(track)
+            # see if a directory exists for the track
+            roadbook_path = Path(filename) / track.name
+            if roadbook_path.exists():
+                self.rbr_roadbook_load_data(roadbook_path, track)
+            else:
+                # try to append ' BTB' to the track name
+                roadbook_path = Path(filename) / f"{track.name} BTB"
+                if roadbook_path.exists():
+                    self.rbr_roadbook_load_data(roadbook_path, track)
+                else:
+                    logging.debug(f"No roadbook found for {track}")
+
+
 
     def landmarks(self):
         # Load track landmarks data
