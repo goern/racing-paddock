@@ -107,7 +107,8 @@ class Command(BaseCommand):
             None
         """
 
-        fastlaps = FastLap.objects.all()
+        batch_size = 100
+        fastlaps = FastLap.objects.all().iterator(chunk_size=batch_size)
         for fastlap in fastlaps:
             data = fastlap.data
             if not isinstance(data, dict):
