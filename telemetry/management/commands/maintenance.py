@@ -64,6 +64,16 @@ class Command(BaseCommand):
             self.fix_fastlaps()
 
     def fix_fastlaps(self):
+        """
+        Deletes fastlaps that have no associated laps.
+
+        This method retrieves all primary keys for fastlaps and all ids for laps.
+        It then removes the lap ids from the fastlap ids and deletes the fastlaps
+        that have no associated laps.
+
+        Returns:
+            None
+        """
         # get all primary keys for fastlaps
         fastlap_ids = list(FastLap.objects.all().values_list("id", flat=True))
         print(f"found {len(fastlap_ids)} fastlaps")
