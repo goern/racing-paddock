@@ -52,6 +52,12 @@ class Command(BaseCommand):
             action="store_true",
         )
 
+        parser.add_argument(
+            "--fix-fastlaps-data",
+            help="fix fastlaps data",
+            action="store_true",
+        )
+
     def handle(self, *args, **options):
         self.influx = Influx()
         if options["delete_influx"]:
@@ -60,6 +66,8 @@ class Command(BaseCommand):
             self.delete_sessions(options["start"], options["end"])
         elif options["fix_rbr_sessions"]:
             self.fix_rbr_sessions()
+        elif options["fix_fastlaps_data"]:
+            self.fix_fastlaps_data()
         elif options["fix_fastlaps"]:
             self.fix_fastlaps()
 
@@ -88,6 +96,33 @@ class Command(BaseCommand):
 
         # delete all fastlaps that have no laps
         FastLap.objects.filter(id__in=rm_fastlap_ids).delete()
+
+    def fix_fastlaps_data(self):
+        """
+        Checks the data attribute of each fastlap. The data attribute should be a dict with a key called 'segment' 
+        that contains a list of instances of type `Segment`.
+
+        Returns:
+            None
+        """
+        from telemetry.models import Segment
+
+        fastlaps = FastLap.objects.all()
+        for fastlap in fastlaps:
+            data = fastlap.data
+            if not isinstance(data, dict):
+                logging.warning(f"FastLap {fastlap.id} has invalid data format.")
+                continue
+
+            segments = data.get("segment", [])
+            if not isinstance(segments, list):
+                logging.warning(f"FastLap {fastlap.id} has invalid segments format.")
+                continue
+
+            for segment in segments:
+                if not isinstance(segment, Segment):
+                    logging.warning(f"FastLap {fastlap.id} has invalid segment instance.")
+                    break
 
     def fix_rbr_sessions(self):
         # get all sessions for Richard Burns Rally
