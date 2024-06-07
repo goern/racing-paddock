@@ -108,8 +108,10 @@ class Command(BaseCommand):
                 track_guide.notes.create(**data)
 
     def rbr_roadbook_load_data(self, path, track):
-        # open the path and get the file with the latest modified date
-        pass
+        # Open the path and get the file with the latest modified date
+        latest_file = max(Path(path).glob('*'), key=lambda f: f.stat().st_mtime)
+        logging.info(f"Latest file: {latest_file}")
+        # Add your logic to process the latest_file here
 
 
 
