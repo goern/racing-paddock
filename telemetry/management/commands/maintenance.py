@@ -5,6 +5,7 @@ from django.core.management.base import BaseCommand
 
 from telemetry.influx import Influx
 from telemetry.models import FastLap, Lap, Session
+from telemetry.pitcrew.segment import Segment
 
 
 class Command(BaseCommand):
@@ -99,13 +100,12 @@ class Command(BaseCommand):
 
     def fix_fastlaps_data(self):
         """
-        Checks the data attribute of each fastlap. The data attribute should be a dict with a key called 'segment' 
+        Checks the data attribute of each fastlap. The data attribute should be a dict with a key called 'segment'
         that contains a list of instances of type `Segment`.
 
         Returns:
             None
         """
-        from telemetry.models import Segment
 
         fastlaps = FastLap.objects.all()
         for fastlap in fastlaps:
