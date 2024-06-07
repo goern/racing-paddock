@@ -46,7 +46,7 @@ class KubeCrew:
             logging.info("Deployment deleted.")
             logging.debug(f"Deployment deleted. status={api_response}")
             return True
-        except client.rest.ApiException as e:
+        except Exception as e:
             logging.error(f"Exception deleting deployment: {e}")
             return False
 
@@ -72,7 +72,7 @@ class KubeCrew:
             api_response = v1.create_namespaced_deployment(namespace=namespace, body=deployment)
             logging.info(f"Deployment created. status={api_response}")
             return True
-        except client.rest.ApiException as e:
+        except Exception as e:
             logging.error(f"Exception creating deployment: {e}")
             return False
 
@@ -86,7 +86,7 @@ class KubeCrew:
             api_response = v1.read_namespaced_deployment(namespace=namespace, name=name)
             # logging.debug(f"Deployment found. status={api_response}")
             return api_response
-        except client.rest.ApiException as e:
+        except Exception as e:
             logging.error(f"Exception reading deployment: {e}")
             return False
 
@@ -100,7 +100,7 @@ class KubeCrew:
             # logging.debug(f"Deployments found. status={api_response}")
             # return a list of all deployment names
             return [item.metadata.name for item in api_response.items]
-        except client.rest.ApiException as e:
+        except Exception as e:
             logging.error(f"Exception listing deployments: {e}")
             return []
 

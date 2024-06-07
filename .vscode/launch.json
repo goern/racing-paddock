@@ -61,6 +61,17 @@
             "django": true
         },
         {
+            "name": "maintenance",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/manage.py",
+            "args": [
+                "maintenance",
+                "--fix-fastlaps-data",
+            ],
+            "django": true
+        },
+        {
             "name": "pitcrew no-save",
             "type": "python",
             "request": "launch",

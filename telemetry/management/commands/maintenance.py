@@ -107,22 +107,28 @@ class Command(BaseCommand):
             None
         """
 
-        batch_size = 100
+        batch_size = 10
         fastlaps = FastLap.objects.all().iterator(chunk_size=batch_size)
         for fastlap in fastlaps:
             data = fastlap.data
-            if not isinstance(data, dict):
-                logging.warning(f"FastLap {fastlap.id} has invalid data format.")
+            if data is None:
                 continue
 
-            segments = data.get("segment", [])
+            if not isinstance(data, dict):
+                logging.warning(f"FastLap {fastlap.id} has invalid data format. dict")
+                fastlap.delete()
+                continue
+
+            segments = data.get("segments", [])
             if not isinstance(segments, list):
-                logging.warning(f"FastLap {fastlap.id} has invalid segments format.")
+                logging.warning(f"FastLap {fastlap.id} has invalid segments format. segments")
+                fastlap.delete()
                 continue
 
             for segment in segments:
                 if not isinstance(segment, Segment):
-                    logging.warning(f"FastLap {fastlap.id} has invalid segment instance.")
+                    logging.warning(f"FastLap {fastlap.id} has invalid segment instance. class segment")
+                    fastlap.delete()
                     break
 
     def fix_rbr_sessions(self):
