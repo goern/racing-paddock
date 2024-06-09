@@ -236,7 +236,7 @@ def session(request, template_name="session.html", **kwargs):
     # if the session has any laps
     if session.laps.count() > 0:
         # get all laps with the same game_id / car_id / track_id
-        lap = session.laps.first()
+        lap = session.laps.select_related('track', 'car').first()
         track_id = lap.track_id
         car_id = lap.car_id
         context["track"] = lap.track
