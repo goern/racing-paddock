@@ -269,8 +269,9 @@
             "args": [
                 "load_data",
                 // "--landmarks",
-                "--track-guide",
-                "${workspaceFolder}/track_guides/Automobilista 2-BMW M4 GT4-Monza:Monza_2020.csv"
+                // "--track-guide",
+                "--landmarks-rbr",
+                "${workspaceFolder}/data/MyPacenotes/"
             ],
             "django": true
         },

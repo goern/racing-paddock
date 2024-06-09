@@ -9,7 +9,7 @@ from openai import OpenAI
 from pydub import AudioSegment
 
 # from telemetry.factories import DriverFactory
-from telemetry.management.commands.rbr_roadbook import Roadbooks
+from telemetry.management.commands.rbr_roadbook import Roadbook, NoteMapper
 from telemetry.models import Game, Landmark, TrackGuide
 
 # from django.db import transaction
@@ -107,28 +107,55 @@ class Command(BaseCommand):
                 logging.debug(data)
                 track_guide.notes.create(**data)
 
-    def rbr_roadbook_load_data(self, path, track):
+    def rbr_roadbook_load_data(self, path, track, mapper):
         # Open the path and get the file with the latest modified date
-        latest_file = max(Path(path).glob('*'), key=lambda f: f.stat().st_mtime)
+        latest_file = max(Path(path).glob('*.ini'), key=lambda f: f.stat().st_mtime)
         logging.info(f"Latest file: {latest_file}")
-        # Add your logic to process the latest_file here
+        book = Roadbook(latest_file)
+        # remove all existing notes
+        Landmark.objects.filter(track=track, from_cc=True).delete()
+        for note_id, note in book.notes.items():
+            logging.debug(note)
+            mapped_note = mapper.map(note.type)
+            if mapped_note:
+                # logging.debug(mapped_note)
+                # create a new landmark
+                name = mapped_note["name"]
+                category = mapped_note["category"]
+                if category == 'CORNERS':
+                    kind = Landmark.KIND_TURN
+                else:
+                    kind = Landmark.KIND_MISC
 
+                distance = note.distance
 
+                logging.debug(f"Creating landmark {name} - {kind}")
+                landmark, created = Landmark.objects.get_or_create(
+                    name=name, start=distance, track=track, kind=kind, from_cc=True
+                )
+            # else:
+            #     logging.debug(f"!!! No mapping for {note.type}")
 
     def rbr_roadbook(self, filename):
         # get all tracks for Richard Burns Rally
         tracks = Game.objects.filter(name="Richard Burns Rally").first().tracks.all()
+        mapper = NoteMapper()
+
         for track in tracks:
             # logging.debug(track)
             # see if a directory exists for the track
-            roadbook_path = Path(filename) / track.name
+            track_name = track.name
+            # translate all umlaute to ascii
+            track_name = track_name.replace("ä", "a").replace("ö", "o").replace("ü", "u")
+            track_name = track_name.replace(".", "_").replace("'", "_").replace("é", "e")
+            roadbook_path = Path(filename) / track_name
             if roadbook_path.exists():
-                self.rbr_roadbook_load_data(roadbook_path, track)
+                self.rbr_roadbook_load_data(roadbook_path, track, mapper)
             else:
                 # try to append ' BTB' to the track name
-                roadbook_path = Path(filename) / f"{track.name} BTB"
+                roadbook_path = Path(filename) / f"{track_name} BTB"
                 if roadbook_path.exists():
-                    self.rbr_roadbook_load_data(roadbook_path, track)
+                    self.rbr_roadbook_load_data(roadbook_path, track, mapper)
                 else:
                     logging.debug(f"No roadbook found for {track}")
 

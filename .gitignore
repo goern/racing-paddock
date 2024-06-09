@@ -73,3 +73,5 @@ prompt*txt
 # Env
 .env
 .aider*
+
+data/

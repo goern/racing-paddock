@@ -230,7 +230,7 @@ def session(request, template_name="session.html", **kwargs):
     try:
         session = get_object_or_404(Session, session_id=session_id)
     except MultipleObjectsReturned:
-        session = Session.objects.filter(session_id=session_id).first()
+        session = Session.objects.filter(session_id=session_id).select_related('game').first()
 
     context = {}
     # if the session has any laps
