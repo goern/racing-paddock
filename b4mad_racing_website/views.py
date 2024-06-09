@@ -227,30 +227,10 @@ def fastlap(request, template_name="fastlap.html", fastlap_id="", **kwargs):
 def session(request, template_name="session.html", **kwargs):
     session_id = kwargs.get("session_id", None)
     lap = kwargs.get("lap", None)
-    try:
-        session = get_object_or_404(Session, session_id=session_id)
-    except MultipleObjectsReturned:
-        session = Session.objects.filter(session_id=session_id).select_related('game').first()
+    session = Session.objects.filter(session_id=session_id).select_related('game', 'driver').first()
 
     context = {}
-    # if the session has any laps
-    if session.laps.count() > 0:
-        # get all laps with the same game_id / car_id / track_id
-        lap = session.laps.select_related('track', 'car').first()
-        track_id = lap.track_id
-        car_id = lap.car_id
-        context["track"] = lap.track
-        context["car"] = lap.car
-
-        compare_laps = (
-            Lap.objects.filter(car_id=car_id, track_id=track_id)
-            .filter(valid=True)
-            .filter(time__gte=0)
-            .filter(fast_lap__isnull=False)
-            .order_by("time")[:5]
-        )
-    else:
-        compare_laps = []
+    context["session"] = session
 
     game = session.game
     if game.name in ["Richard Burns Rally"]:
@@ -258,10 +238,33 @@ def session(request, template_name="session.html", **kwargs):
     else:
         map_data = False
 
-    context["session"] = session
+    context["map_data"] = map_data
+
+    # if the session has any laps
+    if session.laps.count() > 0:
+        # get all laps with the same game_id / car_id / track_id
+        # lap = session.laps.select_related('track', 'car').first()
+        lap = Lap.objects.filter(session=session).select_related('track', 'car').first()
+        track_id = lap.track_id
+        car_id = lap.car_id
+        context["track"] = lap.track
+        context["car"] = lap.car
+
+        # Use select_related to avoid repeated SQL queries for the session
+        compare_laps = list(
+            Lap.objects.filter(
+                car_id=car_id,
+                track_id=track_id,
+                valid=True,
+                time__gte=0,
+                fast_lap__isnull=False
+            ).select_related('session').prefetch_related('session__driver').order_by("time")[:5]
+        )
+    else:
+        compare_laps = []
+
     context["lap_number"] = lap
     context["compare_laps"] = compare_laps
-    context["map_data"] = map_data
 
     return render(request, template_name=template_name, context=context)
 
