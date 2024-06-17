@@ -1,7 +1,8 @@
 import logging
 
-import b4mad_racing_website.models
 from django.dispatch import receiver
+
+import b4mad_racing_website.models
 
 logger = logging.getLogger(__name__)
 

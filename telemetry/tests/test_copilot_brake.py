@@ -1,8 +1,8 @@
 from pprint import pprint  # noqa
 
-from b4mad_racing_website.models import Copilot
 from django.test import TransactionTestCase
 
+from b4mad_racing_website.models import Copilot
 from telemetry.models import Coach, Driver
 from telemetry.pitcrew.coach_copilots import CoachCopilots
 from telemetry.pitcrew.history import History

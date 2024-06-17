@@ -31,7 +31,7 @@ class Command(BaseCommand):
         crew = Crew(save=(not options["no_save"]), replay=options["replay"])
 
         # Check if the B4MAD_RACING_COACH environment variable is set
-        env_coach = os.getenv('B4MAD_RACING_COACH')
+        env_coach = os.getenv("B4MAD_RACING_COACH")
 
         # If the environment variable is set, it overrides the --coach option
         coach_name = options["coach"] if options["coach"] else env_coach

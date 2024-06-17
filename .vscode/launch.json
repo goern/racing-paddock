@@ -4,7 +4,6 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-
         // {
         //     "name": "Python: Current File",
         //     "type": "python",
@@ -22,7 +21,8 @@
             "args": [
                 "analyze",
                 // "--game", "Assetto Corsa (64 bit)",
-                "--game", "Richard Burns Rally",
+                "--game",
+                "Richard Burns Rally",
                 // "--game", "iRacing",
                 // "--game", "rFactor 2 (64 bit)",
                 // "--game", "rFactor",
@@ -138,7 +138,8 @@
             "program": "${workspaceFolder}/manage.py",
             "args": [
                 "pitcrew",
-                "-c", "durandom",
+                "-c",
+                "durandom",
                 "--replay",
             ],
             "django": true
@@ -150,7 +151,8 @@
             "program": "${workspaceFolder}/manage.py",
             "args": [
                 "pitcrew",
-                "-c", "durandom",
+                "-c",
+                "durandom",
             ],
             "django": true
         },
@@ -161,7 +163,8 @@
             "program": "${workspaceFolder}/manage.py",
             "args": [
                 "pitcrew",
-                "-c", "Jim",
+                "-c",
+                "Jim",
             ],
             "django": true
         },
@@ -172,7 +175,8 @@
             "program": "${workspaceFolder}/manage.py",
             "args": [
                 "replay",
-                "--session-id", "1681585723",
+                "--session-id",
+                "1681585723",
                 "--live",
                 "--firehose",
             ],
@@ -216,7 +220,8 @@
                 "--firehose",
                 "--keep-session-id",
                 "--live",
-                "--end", "now()",
+                "--end",
+                "now()",
                 "--start=2023-04-01",
                 "--wait=0",
                 "--quiet",

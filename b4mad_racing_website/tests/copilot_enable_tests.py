@@ -1,5 +1,6 @@
-from b4mad_racing_website.models import CopilotInstance
 from django.test import TestCase
+
+from b4mad_racing_website.models import CopilotInstance
 
 from .factories import CopilotFactory, UserFactory
 
