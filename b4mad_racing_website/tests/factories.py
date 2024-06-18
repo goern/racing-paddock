@@ -1,7 +1,8 @@
 import factory
-from b4mad_racing_website.models import Copilot
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+
+from b4mad_racing_website.models import Copilot
 
 
 class CopilotFactory(factory.django.DjangoModelFactory):

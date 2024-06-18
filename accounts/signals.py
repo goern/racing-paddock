@@ -1,7 +1,8 @@
-from b4mad_racing_website.models import Profile
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+
+from b4mad_racing_website.models import Profile
 
 # FIXME: create a profile with a signal from allauth
 #    I'm too lazy to test this locally

@@ -4,7 +4,6 @@ from datetime import datetime, timedelta
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import MultipleObjectsReturned
 from django.forms.models import BaseModelForm
 from django.http import Http404, HttpResponse, HttpResponseNotAllowed, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -14,8 +13,6 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView
 from django.views.generic.list import ListView
 
-import b4mad_racing_website.fastlap_app  # noqa: F401
-import b4mad_racing_website.pitcrew_app  # noqa: F401
 from telemetry.models import Car, Coach, Driver, Game, Lap, Session, Track
 from telemetry.racing_stats import RacingStats
 
@@ -227,7 +224,7 @@ def fastlap(request, template_name="fastlap.html", fastlap_id="", **kwargs):
 def session(request, template_name="session.html", **kwargs):
     session_id = kwargs.get("session_id", None)
     lap = kwargs.get("lap", None)
-    session = Session.objects.filter(session_id=session_id).select_related('game', 'driver').first()
+    session = Session.objects.filter(session_id=session_id).select_related("game", "driver").first()
 
     context = {}
     context["session"] = session
@@ -244,7 +241,7 @@ def session(request, template_name="session.html", **kwargs):
     if session.laps.count() > 0:
         # get all laps with the same game_id / car_id / track_id
         # lap = session.laps.select_related('track', 'car').first()
-        lap = Lap.objects.filter(session=session).select_related('track', 'car').first()
+        lap = Lap.objects.filter(session=session).select_related("track", "car").first()
         track_id = lap.track_id
         car_id = lap.car_id
         context["track"] = lap.track
@@ -252,13 +249,10 @@ def session(request, template_name="session.html", **kwargs):
 
         # Use select_related to avoid repeated SQL queries for the session
         compare_laps = list(
-            Lap.objects.filter(
-                car_id=car_id,
-                track_id=track_id,
-                valid=True,
-                time__gte=0,
-                fast_lap__isnull=False
-            ).select_related('session').prefetch_related('session__driver').order_by("time")[:5]
+            Lap.objects.filter(car_id=car_id, track_id=track_id, valid=True, time__gte=0, fast_lap__isnull=False)
+            .select_related("session")
+            .prefetch_related("session__driver")
+            .order_by("time")[:5]
         )
     else:
         compare_laps = []

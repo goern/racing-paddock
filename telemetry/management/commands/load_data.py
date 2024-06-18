@@ -9,7 +9,7 @@ from openai import OpenAI
 from pydub import AudioSegment
 
 # from telemetry.factories import DriverFactory
-from telemetry.management.commands.rbr_roadbook import Roadbook, NoteMapper
+from telemetry.management.commands.rbr_roadbook import NoteMapper, Roadbook
 from telemetry.models import Game, Landmark, TrackGuide
 
 # from django.db import transaction
@@ -109,7 +109,7 @@ class Command(BaseCommand):
 
     def rbr_roadbook_load_data(self, path, track, mapper):
         # Open the path and get the file with the latest modified date
-        latest_file = max(Path(path).glob('*.ini'), key=lambda f: f.stat().st_mtime)
+        latest_file = max(Path(path).glob("*.ini"), key=lambda f: f.stat().st_mtime)
         logging.info(f"Latest file: {latest_file}")
         book = Roadbook(latest_file)
         # remove all existing notes
@@ -122,7 +122,7 @@ class Command(BaseCommand):
                 # create a new landmark
                 name = mapped_note["name"]
                 category = mapped_note["category"]
-                if category == 'CORNERS':
+                if category == "CORNERS":
                     kind = Landmark.KIND_TURN
                 else:
                     kind = Landmark.KIND_MISC
@@ -158,8 +158,6 @@ class Command(BaseCommand):
                     self.rbr_roadbook_load_data(roadbook_path, track, mapper)
                 else:
                     logging.debug(f"No roadbook found for {track}")
-
-
 
     def landmarks(self):
         # Load track landmarks data
